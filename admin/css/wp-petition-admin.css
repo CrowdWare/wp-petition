@@ -1,0 +1,198 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+/* Admin Dashboard Styles */
+.wp-petition-admin-wrap {
+    margin: 20px 0;
+}
+
+.wp-petition-admin-header {
+    margin-bottom: 20px;
+}
+
+.wp-petition-admin-header h1 {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.wp-petition-admin-header .add-new-campaign {
+    margin-left: 15px;
+}
+
+/* Campaign Table Styles */
+.wp-petition-campaigns-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.wp-petition-campaigns-table th,
+.wp-petition-campaigns-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.wp-petition-campaigns-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.wp-petition-campaigns-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.wp-petition-campaigns-table .actions {
+    text-align: right;
+}
+
+.wp-petition-campaigns-table .actions a {
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+/* Campaign Form Styles */
+.wp-petition-campaign-form {
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.wp-petition-campaign-form .form-field {
+    margin-bottom: 15px;
+}
+
+.wp-petition-campaign-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.wp-petition-campaign-form input[type="text"],
+.wp-petition-campaign-form input[type="number"],
+.wp-petition-campaign-form input[type="date"],
+.wp-petition-campaign-form textarea,
+.wp-petition-campaign-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.wp-petition-campaign-form textarea {
+    height: 150px;
+}
+
+.wp-petition-campaign-form .submit-button {
+    margin-top: 20px;
+}
+
+/* Settings Page Styles */
+.wp-petition-settings-form {
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.wp-petition-settings-form .form-field {
+    margin-bottom: 15px;
+}
+
+.wp-petition-settings-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.wp-petition-settings-form input[type="text"],
+.wp-petition-settings-form input[type="number"],
+.wp-petition-settings-form select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.wp-petition-settings-form .submit-button {
+    margin-top: 20px;
+}
+
+/* Dashboard Widget Styles */
+.wp-petition-dashboard-widget {
+    padding: 10px;
+}
+
+.wp-petition-dashboard-widget .stats-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.wp-petition-dashboard-widget .stats-item:last-child {
+    border-bottom: none;
+}
+
+.wp-petition-dashboard-widget .stats-label {
+    font-weight: bold;
+}
+
+.wp-petition-dashboard-widget .stats-value {
+    float: right;
+}
+
+/* Progress Bar Styles */
+.wp-petition-progress-container {
+    margin: 15px 0;
+}
+
+.wp-petition-progress-bar {
+    height: 20px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.wp-petition-progress-fill {
+    height: 100%;
+    background-color: #0073aa;
+    transition: width 0.5s ease-in-out;
+}
+
+.wp-petition-progress-fill.hours-progress {
+    background-color: #0073aa;
+}
+
+.wp-petition-progress-fill.money-progress {
+    background-color: #46b450;
+}
+
+.wp-petition-progress-text {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Notification Styles */
+.wp-petition-notice {
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+.wp-petition-notice.success {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    color: #3c763d;
+}
+
+.wp-petition-notice.error {
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    color: #a94442;
+}
+
+.wp-petition-notice.info {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    color: #31708f;
+}
