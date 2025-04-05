@@ -87,10 +87,10 @@ $pages = get_pages();
             <h3><?php echo esc_html__('Shortcodes for this Campaign', 'wp-petition'); ?></h3>
             <p><?php echo esc_html__('Use the following shortcodes to display this campaign on your pages:', 'wp-petition'); ?></p>
             <ul>
-                <li><code>[petition_vote_form id=<?php echo esc_html($campaign_id); ?>]</code> - <?php echo esc_html__('Displays the voting form.', 'wp-petition'); ?></li>
-                <li><code>[petition_vote_list id=<?php echo esc_html($campaign_id); ?>]</code> - <?php echo esc_html__('Displays the voters list.', 'wp-petition'); ?></li>
-                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=bar]</code> - <?php echo esc_html__('Displays the votes progress bar.', 'wp-petition'); ?></li>
-                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=text]</code> - <?php echo esc_html__('Displays the votes count as text.', 'wp-petition'); ?></li>
+                <li><code>[petition_vote_form id=<?php echo esc_html($campaign_id); ?> lang=de|en]</code> - <?php echo esc_html__('Displays the voting form. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
+                <li><code>[petition_vote_list id=<?php echo esc_html($campaign_id); ?> lang=de|en]</code> - <?php echo esc_html__('Displays the voters list. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
+                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=bar lang=de|en]</code> - <?php echo esc_html__('Displays the votes progress bar. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
+                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=text lang=de|en]</code> - <?php echo esc_html__('Displays the votes count as text. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
             </ul>
         </div>
     <?php endif; ?>

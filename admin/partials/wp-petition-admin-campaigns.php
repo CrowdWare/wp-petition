@@ -70,9 +70,9 @@ if (!defined('WPINC')) {
         <h3><?php echo esc_html__('Shortcodes', 'wp-petition'); ?></h3>
         <p><?php echo esc_html__('Use the following shortcodes to display campaign elements on your pages:', 'wp-petition'); ?></p>
         <ul>
-            <li><code>[petition_vote_form id=X]</code> - <?php echo esc_html__('Displays the voting form for the campaign with ID X.', 'wp-petition'); ?></li>
-            <li><code>[petition_vote_list id=X]</code> - <?php echo esc_html__('Displays the voters list for the campaign with ID X.', 'wp-petition'); ?></li>
-            <li><code>[petition_votes_count id=X display=bar|text]</code> - <?php echo esc_html__('Displays the votes count or progress bar for the campaign with ID X. The display parameter can be "bar" or "text".', 'wp-petition'); ?></li>
+            <li><code>[petition_vote_form id=X lang=de|en]</code> - <?php echo esc_html__('Displays the voting form for the campaign with ID X. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
+            <li><code>[petition_vote_list id=X lang=de|en]</code> - <?php echo esc_html__('Displays the voters list for the campaign with ID X. The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
+            <li><code>[petition_votes_count id=X display=bar|text lang=de|en]</code> - <?php echo esc_html__('Displays the votes count or progress bar for the campaign with ID X. The display parameter can be "bar" or "text". The lang parameter can be used to specify the language (e.g., "de" for German, "en" for English).', 'wp-petition'); ?></li>
         </ul>
     </div>
 </div>

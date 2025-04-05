@@ -3,7 +3,7 @@
  * Plugin Name: WP Petition
  * Plugin URI: https://example.com/wp-petition
  * Description: A WordPress plugin for petition campaigns where users can sign and support your cause.
- * Version: 1.0.13
+ * Version: 1.0.14
  * Author: CrowdWare
  * Author URI: https://example.com
  * Text Domain: wp-petition
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 // Define plugin constants
-define('WP_PETITION_VERSION', '1.0.13');
+define('WP_PETITION_VERSION', '1.0.14');
 define('WP_PETITION_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_PETITION_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_PETITION_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -164,8 +164,9 @@ function handle_petition_vote_submission() {
  * Updated function for voting list.
  */
 function petition_vote_list($atts) {
-    $atts = shortcode_atts(array('id' => 0), $atts);
+    $atts = shortcode_atts(array('id' => 0, 'lang' => 'en'), $atts);
     $campaign_id = intval($atts['id']);
+    $lang = $atts['lang'];
 
     if (!$campaign_id) {
         return "<p style='color:red;'>Campaign ID is required.</p>";
@@ -179,33 +180,71 @@ function petition_vote_list($atts) {
     ));
 
     if (empty($results)) {
-        return "<p>No votes found for this campaign.</p>";
+        $translations = array(
+            'en' => 'No votes found for this campaign.',
+            'de' => 'Keine Stimmen für diese Kampagne gefunden.',
+            'es' => 'No se encontraron votos para esta campaña.'
+        );
+        $message = $translations[$lang] ?? $translations['en'];
+        return "<p>" . $message . "</p>";
     }
 
+    // Translations for table headers and content
+    $translations = array(
+        'en' => array(
+            'heading' => 'Last people who signed',
+            'name' => 'Name',
+            'signed' => 'Signed',
+            'type' => 'Type',
+            'thoughts' => 'Feature Requests or Thoughts',
+            'yes' => 'Yes',
+            'no' => 'No'
+        ),
+        'de' => array(
+            'heading' => 'Letzte Unterzeichner',
+            'name' => 'Name',
+            'signed' => 'Unterzeichnet',
+            'type' => 'Typ',
+            'thoughts' => 'Funktionswünsche oder Gedanken',
+            'yes' => 'Ja',
+            'no' => 'Nein'
+        ),
+        'es' => array(
+            'heading' => 'Últimas personas que firmaron',
+            'name' => 'Nombre',
+            'signed' => 'Firmado',
+            'type' => 'Tipo',
+            'thoughts' => 'Sugerencias o pensamientos',
+            'yes' => 'Sí',
+            'no' => 'No'
+        )
+    );
+    $t = $translations[$lang] ?? $translations['en'];
+
     ob_start(); ?>
-    <div class="wp-petition-votes-container" data-campaign-id="<?php echo esc_attr($campaign_id); ?>"> <?php // Add a container div like the donors list ?>
-    <h3><?php echo esc_html__('Last people who signed', 'wp-petition'); ?></h3> <?php // Add a heading ?>
-    <table class="wp-petition-donors-table"> <?php // Add the CSS class here ?>
+    <div class="wp-petition-votes-container" data-campaign-id="<?php echo esc_attr($campaign_id); ?>">
+    <h3><?php echo esc_html($t['heading']); ?></h3>
+    <table class="wp-petition-donors-table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Signed</th>
-                <th>Type</th>
-                <th>Feature Requests or Thoughts</th>
+                <th><?php echo esc_html($t['name']); ?></th>
+                <th><?php echo esc_html($t['signed']); ?></th>
+                <th><?php echo esc_html($t['type']); ?></th>
+                <th><?php echo esc_html($t['thoughts']); ?></th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($results as $row): ?>
                 <tr>
                     <td style="min-width: 200px;"><?php echo esc_html($row->name); ?></td>
-                    <td style="min-width: 100px;"><?php echo $row->interest ? 'Yes' : 'No'; ?></td>
+                    <td style="min-width: 100px;"><?php echo $row->interest ? esc_html($t['yes']) : esc_html($t['no']); ?></td>
                     <td style="min-width: 150px;"><?php echo esc_html($row->contribution_role); ?></td>
                     <td><?php echo esc_html($row->notes); ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-    </div> <?php // Close the container div ?>
+    </div>
     <?php
     return ob_get_clean();
 }
@@ -214,8 +253,9 @@ function petition_vote_list($atts) {
  * Displays the number of votes for a campaign.
  */
 function petition_votes_count($atts) {
-    $atts = shortcode_atts(array('id' => 0, 'display' => 'text'), $atts);
+    $atts = shortcode_atts(array('id' => 0, 'display' => 'text', 'lang' => 'en'), $atts);
     $campaign_id = intval($atts['id']);
+    $lang = $atts['lang'];
 	 // Output the campaign ID for debugging
     echo "<!-- Campaign ID: " . esc_html($campaign_id) . " -->";
     $display = sanitize_text_field($atts['display']);
@@ -248,12 +288,20 @@ function petition_votes_count($atts) {
         $campaign_id
     ));
 
+    // Translations for votes text
+    $translations = array(
+        'en' => 'Votes',
+        'de' => 'Stimmen',
+        'es' => 'Votos'
+    );
+    $votes_text = $translations[$lang] ?? $translations['en'];
+
     if ($display == 'bar') {
         $percent = ($count / $goal) * 100;
         $percent = min($percent, 100); // Cap at 100%
         return '<div class="wp-petition-progress-bar"><div class="wp-petition-progress-bar-inner" style="width: ' . $percent . '%;"></div><div class="wp-petition-progress-bar-text">' . round($percent, 2) . '%</div></div>';
     } else {
-        return "<p>Votes: " . esc_html($count) . "</p>";
+        return "<p>" . esc_html($votes_text) . ": " . esc_html($count) . "</p>";
     }
 }
 
