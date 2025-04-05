@@ -203,7 +203,7 @@ $result = $wpdb->update(
         $args = array();
         
         if ($campaign_id > 0) {
-            $where = 'WHERE campaign_id = %d';
+            $where = 'WHERE v.campaign_id = %d';
             $args[] = $campaign_id;
         }
         
@@ -236,11 +236,11 @@ $result = $wpdb->update(
         $args = array();
         
         if ($campaign_id > 0) {
-            $where = 'WHERE campaign_id = %d';
+            $where = 'WHERE v.campaign_id = %d';
             $args[] = $campaign_id;
         }
         
-        $query = "SELECT COUNT(*) FROM {$this->votes_table} $where";
+        $query = "SELECT COUNT(*) FROM {$this->votes_table} v $where";
         
         if (!empty($args)) {
             return (int) $wpdb->get_var(
