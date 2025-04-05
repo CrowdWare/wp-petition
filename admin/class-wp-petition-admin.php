@@ -56,6 +56,7 @@ class WP_Petition_Admin {
         add_action('wp_ajax_wp_petition_create_campaign', array($this, 'ajax_create_campaign'));
         add_action('wp_ajax_wp_petition_update_campaign', array($this, 'ajax_update_campaign'));
         add_action('wp_ajax_wp_petition_delete_campaign', array($this, 'ajax_delete_campaign'));
+        add_action('wp_ajax_wp_petition_update_vote_notes', array($this, 'ajax_update_vote_notes'));
         
     }
 
@@ -135,6 +136,16 @@ class WP_Petition_Admin {
             array($this, 'display_add_campaign_page')
         );
         
+        // Voters submenu
+        add_submenu_page(
+            'wp-petition',
+            __('Voters', 'wp-petition'),
+            __('Voters', 'wp-petition'),
+            'manage_options',
+            'wp-petition-voters',
+            array($this, 'display_voters_page')
+        );
+        
         // Settings submenu
         add_submenu_page(
             'wp-petition',
@@ -178,6 +189,34 @@ class WP_Petition_Admin {
     }
 
     /**
+     * Display the voters page.
+     *
+     * @since    1.0.0
+     */
+    public function display_voters_page() {
+        // Get campaign ID from query string (if any)
+        $campaign_id = isset($_GET['campaign_id']) ? intval($_GET['campaign_id']) : 0;
+        
+        // Get page number
+        $page = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
+        $per_page = 50; // Items per page
+        $offset = ($page - 1) * $per_page;
+        
+        // Get all campaigns for the filter dropdown
+        $campaigns = $this->campaign->get_campaigns();
+        
+        // Get votes with pagination
+        $votes = $this->db->get_votes($campaign_id, $offset, $per_page);
+        
+        // Get total votes count for pagination
+        $total_votes = $this->db->get_votes_count($campaign_id);
+        $total_pages = ceil($total_votes / $per_page);
+        
+        // Include the voters page template
+        include WP_PETITION_PLUGIN_DIR . 'admin/partials/wp-petition-admin-voters.php';
+    }
+
+    /**
      * Display the settings page.
      *
      * @since    1.0.0
@@ -185,6 +224,40 @@ class WP_Petition_Admin {
     public function display_settings_page() {
         // Include the settings page template
         include WP_PETITION_PLUGIN_DIR . 'admin/partials/wp-petition-admin-settings.php';
+    }
+    
+    /**
+     * AJAX handler for updating vote notes.
+     *
+     * @since    1.0.0
+     */
+    public function ajax_update_vote_notes() {
+        // Check nonce
+        check_ajax_referer('wp_petition_admin_nonce', 'nonce');
+        
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'wp-petition')));
+        }
+        
+        // Get vote ID and notes
+        $vote_id = isset($_POST['vote_id']) ? intval($_POST['vote_id']) : 0;
+        $notes = isset($_POST['notes']) ? sanitize_textarea_field($_POST['notes']) : '';
+        
+        if ($vote_id <= 0) {
+            wp_send_json_error(array('message' => __('Invalid vote ID.', 'wp-petition')));
+        }
+        
+        // Update the vote notes
+        $result = $this->db->update_vote_notes($vote_id, $notes);
+        
+        if (!$result) {
+            wp_send_json_error(array('message' => __('Failed to update notes.', 'wp-petition')));
+        }
+        
+        wp_send_json_success(array(
+            'message' => __('Notes updated successfully.', 'wp-petition'),
+        ));
     }
 
     /**

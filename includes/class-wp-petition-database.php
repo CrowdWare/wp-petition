@@ -186,4 +186,106 @@ $result = $wpdb->update(
             )
         );
     }
+
+    /**
+     * Get votes for a campaign with pagination.
+     *
+     * @since    1.0.0
+     * @param    int      $campaign_id    The campaign ID. Use 0 for all campaigns.
+     * @param    int      $offset         The offset.
+     * @param    int      $limit          The limit.
+     * @return   array                    The votes.
+     */
+    public function get_votes($campaign_id = 0, $offset = 0, $limit = 50) {
+        global $wpdb;
+        
+        $where = '';
+        $args = array();
+        
+        if ($campaign_id > 0) {
+            $where = 'WHERE campaign_id = %d';
+            $args[] = $campaign_id;
+        }
+        
+        $query = "SELECT v.*, c.title as campaign_title 
+                 FROM {$this->votes_table} v
+                 LEFT JOIN {$this->campaigns_table} c ON v.campaign_id = c.campaign_id
+                 $where
+                 ORDER BY v.created_at DESC
+                 LIMIT %d, %d";
+        
+        $args[] = $offset;
+        $args[] = $limit;
+        
+        return $wpdb->get_results(
+            $wpdb->prepare($query, $args)
+        );
+    }
+
+    /**
+     * Get total votes count (optionally filtered by campaign).
+     *
+     * @since    1.0.0
+     * @param    int      $campaign_id    The campaign ID. Use 0 for all campaigns.
+     * @return   int                      The total votes count.
+     */
+    public function get_votes_count($campaign_id = 0) {
+        global $wpdb;
+        
+        $where = '';
+        $args = array();
+        
+        if ($campaign_id > 0) {
+            $where = 'WHERE campaign_id = %d';
+            $args[] = $campaign_id;
+        }
+        
+        $query = "SELECT COUNT(*) FROM {$this->votes_table} $where";
+        
+        if (!empty($args)) {
+            return (int) $wpdb->get_var(
+                $wpdb->prepare($query, $args)
+            );
+        } else {
+            return (int) $wpdb->get_var($query);
+        }
+    }
+
+    /**
+     * Get a vote by ID.
+     *
+     * @since    1.0.0
+     * @param    int      $vote_id    The vote ID.
+     * @return   object|null          The vote object, or null if not found.
+     */
+    public function get_vote($vote_id) {
+        global $wpdb;
+        
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->votes_table} WHERE votes_id = %d",
+                $vote_id
+            )
+        );
+    }
+
+    /**
+     * Update vote notes.
+     *
+     * @since    1.0.0
+     * @param    int      $vote_id    The vote ID.
+     * @param    string   $notes      The notes.
+     * @return   bool                 True on success, false on failure.
+     */
+    public function update_vote_notes($vote_id, $notes) {
+        global $wpdb;
+        
+        $result = $wpdb->update(
+            $this->votes_table,
+            array('notes' => $notes),
+            array('votes_id' => $vote_id)
+        );
+        
+        return $result !== false;
+    }
 }
