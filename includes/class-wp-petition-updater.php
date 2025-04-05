@@ -28,7 +28,7 @@ class WP_Petition_Updater {
      * @access   private
      * @var      string    $db_version    The current database version.
      */
-    private $db_version = '1.0.2';
+    private $db_version = '1.0.3';
 
     /**
      * Initialize the class and set its properties.
@@ -48,7 +48,34 @@ class WP_Petition_Updater {
         $installed_db_version = get_option('wp_petition_db_version');
 
         if ($installed_db_version !== $this->db_version) {
-            // update_option('wp_petition_db_version', $this->db_version);
+            // Run updates based on the installed version
+            if (version_compare($installed_db_version, '1.0.3', '<')) {
+                $this->update_to_1_0_3();
+            }
+            
+            // Update the database version
+            update_option('wp_petition_db_version', $this->db_version);
+        }
+    }
+    
+    /**
+     * Update to version 1.0.3.
+     * 
+     * Adds the admin_notes field to the votes table.
+     *
+     * @since    1.0.3
+     */
+    private function update_to_1_0_3() {
+        global $wpdb;
+        
+        $votes_table = $wpdb->prefix . 'petition_votes';
+        
+        // Check if the admin_notes column already exists
+        $column_exists = $wpdb->get_results("SHOW COLUMNS FROM {$votes_table} LIKE 'admin_notes'");
+        
+        if (empty($column_exists)) {
+            // Add the admin_notes column
+            $wpdb->query("ALTER TABLE {$votes_table} ADD COLUMN admin_notes TEXT AFTER notes");
         }
     }
 }

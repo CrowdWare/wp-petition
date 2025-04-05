@@ -135,6 +135,7 @@ if (!defined('WPINC')) {
                 <th scope="col" class="manage-column column-interest"><?php echo esc_html__('Interest', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-role"><?php echo esc_html__('Role', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-notes"><?php echo esc_html__('Notes', 'wp-petition'); ?></th>
+                <th scope="col" class="manage-column column-admin-notes"><?php echo esc_html__('Admin Notes', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-date"><?php echo esc_html__('Date', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-actions"><?php echo esc_html__('Actions', 'wp-petition'); ?></th>
             </tr>
@@ -155,20 +156,25 @@ if (!defined('WPINC')) {
                         <td><?php echo esc_html($vote->contribution_role); ?></td>
                         <td class="notes-cell">
                             <div class="notes-display"><?php echo esc_html($vote->notes); ?></div>
-                            <div class="notes-edit" style="display: none;">
-                                <textarea class="notes-textarea" rows="3"><?php echo esc_textarea($vote->notes); ?></textarea>
+                        </td>
+                        <td class="admin-notes-cell">
+                            <div class="admin-notes-display"><?php echo esc_html($vote->admin_notes); ?></div>
+                            <div class="admin-notes-edit" style="display: none;">
+                                <textarea class="admin-notes-textarea" rows="3"><?php echo esc_textarea($vote->admin_notes); ?></textarea>
                             </div>
                         </td>
                         <td><?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($vote->created_at))); ?></td>
                         <td>
-                            <button type="button" class="button edit-notes" data-vote-id="<?php echo esc_attr($vote->votes_id); ?>">
-                                <?php echo esc_html__('Edit Notes', 'wp-petition'); ?>
-                            </button>
-                            <div class="save-cancel-buttons" style="display: none;">
-                                <button type="button" class="button button-primary save-notes" data-vote-id="<?php echo esc_attr($vote->votes_id); ?>">
+                            <div class="action-buttons">
+                                <button type="button" class="button edit-admin-notes" data-vote-id="<?php echo esc_attr($vote->votes_id); ?>">
+                                    <?php echo esc_html__('Edit Admin Notes', 'wp-petition'); ?>
+                                </button>
+                            </div>
+                            <div class="save-cancel-admin-buttons" style="display: none;">
+                                <button type="button" class="button button-primary save-admin-notes" data-vote-id="<?php echo esc_attr($vote->votes_id); ?>">
                                     <?php echo esc_html__('Save', 'wp-petition'); ?>
                                 </button>
-                                <button type="button" class="button cancel-edit">
+                                <button type="button" class="button cancel-admin-edit">
                                     <?php echo esc_html__('Cancel', 'wp-petition'); ?>
                                 </button>
                             </div>
@@ -186,6 +192,7 @@ if (!defined('WPINC')) {
                 <th scope="col" class="manage-column column-interest"><?php echo esc_html__('Interest', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-role"><?php echo esc_html__('Role', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-notes"><?php echo esc_html__('Notes', 'wp-petition'); ?></th>
+                <th scope="col" class="manage-column column-admin-notes"><?php echo esc_html__('Admin Notes', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-date"><?php echo esc_html__('Date', 'wp-petition'); ?></th>
                 <th scope="col" class="manage-column column-actions"><?php echo esc_html__('Actions', 'wp-petition'); ?></th>
             </tr>
@@ -285,29 +292,29 @@ if (!defined('WPINC')) {
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    // Edit notes button click
-    $('.edit-notes').on('click', function() {
+    // Edit admin notes button click
+    $('.edit-admin-notes').on('click', function() {
         var row = $(this).closest('tr');
-        row.find('.notes-display').hide();
-        row.find('.notes-edit').show();
-        $(this).hide();
-        row.find('.save-cancel-buttons').show();
+        row.find('.admin-notes-display').hide();
+        row.find('.admin-notes-edit').show();
+        row.find('.action-buttons').hide();
+        row.find('.save-cancel-admin-buttons').show();
     });
     
-    // Cancel edit button click
-    $('.cancel-edit').on('click', function() {
+    // Cancel admin edit button click
+    $('.cancel-admin-edit').on('click', function() {
         var row = $(this).closest('tr');
-        row.find('.notes-edit').hide();
-        row.find('.notes-display').show();
-        row.find('.save-cancel-buttons').hide();
-        row.find('.edit-notes').show();
+        row.find('.admin-notes-edit').hide();
+        row.find('.admin-notes-display').show();
+        row.find('.save-cancel-admin-buttons').hide();
+        row.find('.action-buttons').show();
     });
     
-    // Save notes button click
-    $('.save-notes').on('click', function() {
+    // Save admin notes button click
+    $('.save-admin-notes').on('click', function() {
         var row = $(this).closest('tr');
         var vote_id = $(this).data('vote-id');
-        var notes = row.find('.notes-textarea').val();
+        var admin_notes = row.find('.admin-notes-textarea').val();
         var saveButton = $(this);
         
         // Disable the save button while saving
@@ -318,18 +325,18 @@ jQuery(document).ready(function($) {
             url: wp_petition_admin.ajax_url,
             type: 'POST',
             data: {
-                action: 'wp_petition_update_vote_notes',
+                action: 'wp_petition_update_vote_admin_notes',
                 vote_id: vote_id,
-                notes: notes,
+                admin_notes: admin_notes,
                 nonce: wp_petition_admin.nonce
             },
             success: function(response) {
                 if (response.success) {
-                    // Update the displayed notes
-                    row.find('.notes-display').text(notes).show();
-                    row.find('.notes-edit').hide();
-                    row.find('.save-cancel-buttons').hide();
-                    row.find('.edit-notes').show();
+                    // Update the displayed admin notes
+                    row.find('.admin-notes-display').text(admin_notes).show();
+                    row.find('.admin-notes-edit').hide();
+                    row.find('.save-cancel-admin-buttons').hide();
+                    row.find('.action-buttons').show();
                     
                     // Show success message
                     alert(response.data.message);
@@ -339,7 +346,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('<?php echo esc_js(__('An error occurred while saving the notes.', 'wp-petition')); ?>');
+                alert('<?php echo esc_js(__('An error occurred while saving the admin notes.', 'wp-petition')); ?>');
             },
             complete: function() {
                 // Re-enable the save button
@@ -351,18 +358,24 @@ jQuery(document).ready(function($) {
 </script>
 
 <style type="text/css">
-.notes-textarea {
+.notes-textarea, .admin-notes-textarea {
     width: 100%;
     min-width: 150px;
 }
-.column-notes {
-    width: 20%;
+.column-notes, .column-admin-notes {
+    width: 15%;
 }
 .column-actions {
-    width: 150px;
+    width: 200px;
 }
-.save-cancel-buttons {
+.save-cancel-buttons, .save-cancel-admin-buttons {
     display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+.action-buttons {
+    display: flex;
+    flex-direction: column;
     gap: 5px;
 }
 </style>

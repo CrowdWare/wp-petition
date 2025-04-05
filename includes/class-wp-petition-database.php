@@ -288,4 +288,24 @@ $result = $wpdb->update(
         
         return $result !== false;
     }
+    
+    /**
+     * Update vote admin notes.
+     *
+     * @since    1.0.3
+     * @param    int      $vote_id       The vote ID.
+     * @param    string   $admin_notes   The admin notes.
+     * @return   bool                    True on success, false on failure.
+     */
+    public function update_vote_admin_notes($vote_id, $admin_notes) {
+        global $wpdb;
+        
+        $result = $wpdb->update(
+            $this->votes_table,
+            array('admin_notes' => $admin_notes),
+            array('votes_id' => $vote_id)
+        );
+        
+        return $result !== false;
+    }
 }

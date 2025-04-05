@@ -57,6 +57,7 @@ class WP_Petition_Admin {
         add_action('wp_ajax_wp_petition_update_campaign', array($this, 'ajax_update_campaign'));
         add_action('wp_ajax_wp_petition_delete_campaign', array($this, 'ajax_delete_campaign'));
         add_action('wp_ajax_wp_petition_update_vote_notes', array($this, 'ajax_update_vote_notes'));
+        add_action('wp_ajax_wp_petition_update_vote_admin_notes', array($this, 'ajax_update_vote_admin_notes'));
         
     }
 
@@ -257,6 +258,40 @@ class WP_Petition_Admin {
         
         wp_send_json_success(array(
             'message' => __('Notes updated successfully.', 'wp-petition'),
+        ));
+    }
+    
+    /**
+     * AJAX handler for updating vote admin notes.
+     *
+     * @since    1.0.3
+     */
+    public function ajax_update_vote_admin_notes() {
+        // Check nonce
+        check_ajax_referer('wp_petition_admin_nonce', 'nonce');
+        
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'wp-petition')));
+        }
+        
+        // Get vote ID and admin notes
+        $vote_id = isset($_POST['vote_id']) ? intval($_POST['vote_id']) : 0;
+        $admin_notes = isset($_POST['admin_notes']) ? sanitize_textarea_field($_POST['admin_notes']) : '';
+        
+        if ($vote_id <= 0) {
+            wp_send_json_error(array('message' => __('Invalid vote ID.', 'wp-petition')));
+        }
+        
+        // Update the vote admin notes
+        $result = $this->db->update_vote_admin_notes($vote_id, $admin_notes);
+        
+        if (!$result) {
+            wp_send_json_error(array('message' => __('Failed to update admin notes.', 'wp-petition')));
+        }
+        
+        wp_send_json_success(array(
+            'message' => __('Admin notes updated successfully.', 'wp-petition'),
         ));
     }
 

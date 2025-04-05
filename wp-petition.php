@@ -3,7 +3,7 @@
  * Plugin Name: WP Petition
  * Plugin URI: https://example.com/wp-petition
  * Description: A WordPress plugin for petition campaigns where users can sign and support your cause.
- * Version: 1.0.12
+ * Version: 1.0.13
  * Author: CrowdWare
  * Author URI: https://example.com
  * Text Domain: wp-petition
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 // Define plugin constants
-define('WP_PETITION_VERSION', '1.0.12');
+define('WP_PETITION_VERSION', '1.0.13');
 define('WP_PETITION_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_PETITION_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_PETITION_PLUGIN_BASENAME', plugin_basename(__FILE__));
