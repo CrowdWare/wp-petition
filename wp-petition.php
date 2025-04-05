@@ -3,7 +3,7 @@
  * Plugin Name: WP Petition
  * Plugin URI: https://example.com/wp-petition
  * Description: A WordPress plugin for time-based petition campaigns where users can donate their time instead of money.
- * Version: 1.0.4
+ * Version: 1.0.7
  * Author: CrowdWare
  * Author URI: https://example.com
  * Text Domain: wp-petition
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 // Define plugin constants
-define('WP_PETITION_VERSION', '1.0.4');
+define('WP_PETITION_VERSION', '1.0.7');
 define('WP_PETITION_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_PETITION_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_PETITION_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -296,8 +296,11 @@ function petition_votes_count($atts) {
  * Displays the voting form.
  */
 function petition_vote_form($atts) {
-    $atts = shortcode_atts(array('id' => 0), $atts);
+    // $atts = shortcode_atts(array('id' => 0), $atts);
+    $atts = shortcode_atts(array('id' => 0, 'lang' => 'en'), $atts);
+    $lang = $atts['lang'];
     $campaign_id = intval($atts['id']);
+    
 
     if (!$campaign_id) {
         return "<p style='color:red;'>Campaign ID is required.</p>";
@@ -306,17 +309,58 @@ function petition_vote_form($atts) {
     // The processing logic is now handled by handle_petition_vote_submission() hooked to 'init'.
     // This function now only displays the form and handles GET parameter messages.
 
+    $translations = array(
+        'en' => array(
+            'headline' => '✨ Join the Movement',
+            'intro' => "You are not alone. But this only becomes true when we connect.<br>Let us know you’re here. Tell us what moves you.<br>Together, we create what the world needs.",
+            'thank_you' => 'Thank you for your support!',
+            'name' => '🪶 Your Name:',
+            'email' => '📬 Your Email:',
+            'would_use' => '🌱 Would you use this in your life or community?',
+            'how_contribute' => '🤝 How can you contribute?',
+            'feature_requests' => '💡 Feature Requests or Thoughts:',
+            'support_manifesto' => '[✔️] I support the YANA Manifesto',
+            'submit' => 'Count me in',
+            'options' => array('Ideas', 'Energy', 'Writing', 'Tech', 'Organizing')
+        ),
+        'de' => array(
+            'headline' => '✨ Mach mit bei der Bewegung',
+            'intro' => "Du bist nicht allein. Aber das wird erst wahr, wenn wir uns verbinden.<br>Lass uns wissen, dass du da bist. Sag uns, was dich bewegt.<br>Gemeinsam erschaffen wir, was die Welt braucht.",
+            'thank_you' => 'Danke für deine Unterstützung!',
+            'name' => '🪶 Dein Name:',
+            'email' => '📬 Deine E-Mail:',
+            'would_use' => '🌱 Würdest du das in deinem Leben oder deiner Gemeinschaft nutzen?',
+            'how_contribute' => '🤝 Wie kannst du beitragen?',
+            'feature_requests' => '💡 Funktionswünsche oder Gedanken:',
+            'support_manifesto' => '[✔️] Ich unterstütze das YANA-Manifest',
+            'submit' => 'Ich bin dabei',
+            'options' => array('Ideen', 'Energie', 'Schreiben', 'Technik', 'Organisation')
+        ),
+        'es' => array(
+            'headline' => '✨ Únete al movimiento',
+            'intro' => "No estás solo. Pero esto solo se vuelve verdad cuando nos conectamos.<br>Haznos saber que estás aquí. Cuéntanos qué te mueve.<br>Juntos creamos lo que el mundo necesita.",
+            'thank_you' => '¡Gracias por tu apoyo!',
+            'name' => '🪶 Tu nombre:',
+            'email' => '📬 Tu correo electrónico:',
+            'would_use' => '🌱 ¿Lo usarías en tu vida o comunidad?',
+            'how_contribute' => '🤝 ¿Cómo puedes contribuir?',
+            'feature_requests' => '💡 Sugerencias o pensamientos:',
+            'support_manifesto' => '[✔️] Apoyo el Manifiesto YANA',
+            'submit' => 'Cuenta conmigo',
+            'options' => array('Ideas', 'Energía', 'Escritura', 'Tecnología', 'Organización')
+        )
+    );
+    $t = $translations[$lang] ?? $translations['en'];
+
     ob_start(); ?>
     <div class="wp-petition-form-container">
-    <h3><?php echo esc_html__('✨ Join the Movement', 'wp-petition'); ?></h3>
-    <p>You are not alone. But this only becomes true when we connect.<br>
-    Let us know you’re here. Tell us what moves you.<br>
-    Together, we create what the world needs.</p>
+    <h3><?php echo esc_html($t['headline']); ?></h3>
+    <p><?php echo $t['intro']; ?></p>
     <div class="wp-petition-notice-container">
         <?php
         // Display success message if set
         if ( isset( $_GET['wp_petition_vote_success'] ) ) {
-            echo '<div class="wp-petition-notice success">' . esc_html__('Thank you for your support!', 'wp-petition') . '</div>';
+            echo '<div class="wp-petition-notice success">' . esc_html($t['thank_you']) . '</div>';
         }
 
         // Display error message if set
@@ -332,34 +376,32 @@ function petition_vote_form($atts) {
     <?php // Add hidden field for the current URL ?>
     <input type="hidden" name="_wp_http_referer" value="<?php echo esc_url(wp_unslash($_SERVER['REQUEST_URI'])); ?>">
     <div class="form-field">
-        <label>🪶 Your Name:</label>
+        <label><?php echo $t['name']; ?></label>
         <input type="text" name="name" required><br>
     </div>
     <div class="form-field">
-        <label>📬 Your Email:</label>
+        <label><?php echo $t['email']; ?></label>
         <input type="email" name="email" required><br>
     </div>
     <div class="form-field">
-        <label>🌱 Would you use this in your life or community?</label>
+        <label><?php echo $t['would_use']; ?></label>
         <input type="checkbox" name="interest"><br>
     </div>
     <div class="form-field">
-        <label>🤝 How can you contribute?</label>
+        <label><?php echo $t['how_contribute']; ?></label>
         <select name="role">
-            <option value="Ideas">Ideas</option>
-            <option value="Energy">Energy</option>
-            <option value="Writing">Writing</option>  
-            <option value="Tech">Tech</option>
-            <option value="Organizing">Organizing</option>
+            <?php foreach ($t['options'] as $opt): ?>
+                <option value="<?php echo esc_attr($opt); ?>"><?php echo esc_html($opt); ?></option>
+            <?php endforeach; ?>
         </select><br>
     </div>
     <div class="form-field">
-        <label>💡 Feature Requests or Thoughts:</label>
+        <label><?php echo $t['feature_requests']; ?></label>
         <textarea name="notes"></textarea><br>
     </div>
     <div class="form-field">
-        <label>[✔️] I support the YANA Manifesto</label>
-        <input type="submit" class="submit-button" name="petition_vote_submit" value="Count me in">
+        <label><?php echo $t['support_manifesto']; ?></label>
+        <input type="submit" class="submit-button" name="petition_vote_submit" value="<?php echo esc_attr($t['submit']); ?>">
     </div>
     </form>
 </div>
