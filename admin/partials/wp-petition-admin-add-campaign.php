@@ -19,10 +19,7 @@ $is_edit = isset($campaign) && $campaign;
 $campaign_id = $is_edit ? $campaign->campaign_id : 0;
 $title = $is_edit ? $campaign->title : '';
 $description = $is_edit ? $campaign->description : '';
-$goal_hours = $is_edit ? $campaign->goal_hours : 0;
-$goal_amount = $is_edit ? $campaign->goal_amount : 0.00;
-$goal_minutos = $is_edit && isset($campaign->goal_minutos) ? $campaign->goal_minutos : 0;
-$goal_votes = $is_edit && isset($campaign->goal_votes) ? $campaign->goal_votes : 0; // Define goal_votes variable
+$goal_votes = $is_edit && isset($campaign->goal_votes) ? $campaign->goal_votes : 0;
 $start_date = $is_edit && $campaign->start_date ? date('Y-m-d', strtotime($campaign->start_date)) : '';
 $end_date = $is_edit && $campaign->end_date ? date('Y-m-d', strtotime($campaign->end_date)) : '';
 $page_id = $is_edit ? $campaign->page_id : 0;
@@ -52,21 +49,6 @@ $pages = get_pages();
             <textarea name="description" id="description" rows="5"><?php echo esc_textarea($description); ?></textarea>
         </div>
         
-        <div class="form-field">
-            <label for="goal_hours"><?php echo esc_html__('Hours Goal', 'wp-petition'); ?></label>
-            <input type="number" name="goal_hours" id="goal_hours" min="0" value="<?php echo esc_attr($goal_hours); ?>">
-        </div>
-        
-        <div class="form-field">
-            <label for="goal_amount"><?php echo esc_html__('Money Goal (€)', 'wp-petition'); ?></label>
-            <input type="number" name="goal_amount" id="goal_amount" min="0" step="0.01" value="<?php echo esc_attr($goal_amount); ?>">
-        </div>
-        
-        <div class="form-field">
-            <label for="goal_minutos"><?php echo esc_html__('Minutos Goal', 'wp-petition'); ?></label>
-            <input type="number" name="goal_minutos" id="goal_minutos" min="0" value="<?php echo esc_attr($goal_minutos); ?>">
-        </div>
-
         <div class="form-field">
             <label for="goal_votes"><?php echo esc_html__('Votes Goal', 'wp-petition'); ?></label>
             <input type="number" name="goal_votes" id="goal_votes" min="0" value="<?php echo esc_attr($goal_votes); ?>">
@@ -105,13 +87,10 @@ $pages = get_pages();
             <h3><?php echo esc_html__('Shortcodes for this Campaign', 'wp-petition'); ?></h3>
             <p><?php echo esc_html__('Use the following shortcodes to display this campaign on your pages:', 'wp-petition'); ?></p>
             <ul>
-                <li><code>[petition_form id=<?php echo esc_html($campaign_id); ?>]</code> - <?php echo esc_html__('Displays the donation form.', 'wp-petition'); ?></li>
-                <li><code>[petition_donors id=<?php echo esc_html($campaign_id); ?> type=time]</code> - <?php echo esc_html__('Displays the time donors list.', 'wp-petition'); ?></li>
-                <li><code>[petition_donors id=<?php echo esc_html($campaign_id); ?> type=money]</code> - <?php echo esc_html__('Displays the money donors list.', 'wp-petition'); ?></li>
-                <li><code>[petition_donors id=<?php echo esc_html($campaign_id); ?> type=both]</code> - <?php echo esc_html__('Displays both time and money donors lists.', 'wp-petition'); ?></li>
-                <li><code>[petition_progress id=<?php echo esc_html($campaign_id); ?> type=hours display=bar]</code> - <?php echo esc_html__('Displays the hours progress bar.', 'wp-petition'); ?></li>
-                <li><code>[petition_progress id=<?php echo esc_html($campaign_id); ?> type=money display=bar]</code> - <?php echo esc_html__('Displays the money progress bar.', 'wp-petition'); ?></li>
-                <li><code>[petition_progress id=<?php echo esc_html($campaign_id); ?> type=minutos display=bar]</code> - <?php echo esc_html__('Displays the Minutos progress bar.', 'wp-petition'); ?></li>
+                <li><code>[petition_vote_form id=<?php echo esc_html($campaign_id); ?>]</code> - <?php echo esc_html__('Displays the voting form.', 'wp-petition'); ?></li>
+                <li><code>[petition_vote_list id=<?php echo esc_html($campaign_id); ?>]</code> - <?php echo esc_html__('Displays the voters list.', 'wp-petition'); ?></li>
+                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=bar]</code> - <?php echo esc_html__('Displays the votes progress bar.', 'wp-petition'); ?></li>
+                <li><code>[petition_votes_count id=<?php echo esc_html($campaign_id); ?> display=text]</code> - <?php echo esc_html__('Displays the votes count as text.', 'wp-petition'); ?></li>
             </ul>
         </div>
     <?php endif; ?>

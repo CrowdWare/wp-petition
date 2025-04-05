@@ -59,14 +59,6 @@ class WP_Petition {
      */
     protected $campaign;
 
-    /**
-     * The donation handler.
-     *
-     * @since    1.0.0
-     * @access   protected
-     * @var      WP_Petition_Donation    $donation    The donation handler.
-     */
-    protected $donation;
 
     /**
      * Define the core functionality of the plugin.
@@ -94,17 +86,13 @@ private function load_dependencies() {
     require_once WP_PETITION_PLUGIN_DIR . 'includes/class-wp-petition-campaign.php';
     $this->campaign = new WP_Petition_Campaign($this->db);
 
-    // Include the donation class
-    require_once WP_PETITION_PLUGIN_DIR . 'includes/class-wp-petition-donation.php';
-    $this->donation = new WP_Petition_Donation($this->db);
-
     // Include the admin class
     require_once WP_PETITION_PLUGIN_DIR . 'admin/class-wp-petition-admin.php';
-    $this->admin = new WP_Petition_Admin($this->db, $this->campaign, $this->donation);
+    $this->admin = new WP_Petition_Admin($this->db, $this->campaign);
 
     // Include the public class
     require_once WP_PETITION_PLUGIN_DIR . 'public/class-wp-petition-public.php';
-    $this->public = new WP_Petition_Public($this->db, $this->campaign, $this->donation);
+    $this->public = new WP_Petition_Public($this->db, $this->campaign);
 
     // Include the updater class
     require_once WP_PETITION_PLUGIN_DIR . 'includes/class-wp-petition-updater.php';
@@ -130,8 +118,6 @@ private function load_dependencies() {
         add_action('wp_ajax_wp_petition_create_campaign', array($this->admin, 'ajax_create_campaign'));
         add_action('wp_ajax_wp_petition_update_campaign', array($this->admin, 'ajax_update_campaign'));
         add_action('wp_ajax_wp_petition_delete_campaign', array($this->admin, 'ajax_delete_campaign'));
-        add_action('wp_ajax_wp_petition_export_donors', array($this->admin, 'ajax_export_donors'));
-        add_action('wp_ajax_wp_petition_mark_minutos_received', array($this->admin, 'ajax_mark_minutos_received'));
     }
 
     /**
@@ -145,19 +131,6 @@ private function load_dependencies() {
         // Public scripts and styles
         add_action('wp_enqueue_scripts', array($this->public, 'enqueue_styles'));
         add_action('wp_enqueue_scripts', array($this->public, 'enqueue_scripts'));
-
-        // Register shortcodes
-        add_shortcode('petition_form', array($this->public, 'shortcode_donation_form'));
-        add_shortcode('petition_donors', array($this->public, 'shortcode_donors_list'));
-        add_shortcode('petition_progress', array($this->public, 'shortcode_progress_display'));
-
-
-        // Form submission handler
-        add_action('init', array($this->public, 'handle_form_submission'));
-
-        // AJAX handlers for public-facing functionality
-        add_action('wp_ajax_wp_petition_submit_donation', array($this->public, 'ajax_submit_donation'));
-        add_action('wp_ajax_nopriv_wp_petition_submit_donation', array($this->public, 'ajax_submit_donation'));
     }
 
     /**

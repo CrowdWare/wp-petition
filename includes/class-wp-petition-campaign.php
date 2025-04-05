@@ -136,100 +136,20 @@ if (!isset($campaign_data['goal_votes'])) {
     }
 
     /**
-     * Get donation statistics for a campaign.
-     *
-     * @since    1.0.0
-     * @param    int      $campaign_id    The campaign ID.
-     * @return   array                    The donation statistics.
-     */
-    public function get_donation_stats($campaign_id) {
-        return $this->db->get_donation_stats($campaign_id);
-    }
-
-    /**
-     * Get Minutos statistics for a campaign.
-     *
-     * @since    1.0.0
-     * @param    int      $campaign_id    The campaign ID.
-     * @return   array                    The Minutos statistics.
-     */
-    public function get_minutos_stats($campaign_id) {
-        $campaign = $this->db->get_campaign($campaign_id);
-        if (!$campaign) {
-            return array(
-                'total_minutos' => 0,
-                'total_minutos_received' => 0,
-                'minutos_monetary_value' => 0,
-                'minutos_received_monetary_value' => 0,
-                'goal_amount' => 0,
-                'goal_minutos' => 0,
-                'minutos_percentage' => 0,
-            );
-        }
-        
-        $total_minutos = $this->db->get_total_minutos($campaign_id, false);
-        $total_minutos_received = $this->db->get_total_minutos($campaign_id, true);
-        $minutos_monetary_value = $this->db->get_minutos_monetary_value($campaign_id, false);
-        $minutos_received_monetary_value = $this->db->get_minutos_monetary_value($campaign_id, true);
-        
-        // Calculate percentage based on goal_minutos if available, otherwise use goal_amount
-        $minutos_percentage = 0;
-        if (isset($campaign->goal_minutos) && $campaign->goal_minutos > 0) {
-            $minutos_percentage = ($total_minutos / $campaign->goal_minutos) * 100;
-        } elseif ($campaign->goal_amount > 0) {
-            $minutos_percentage = ($minutos_monetary_value / $campaign->goal_amount) * 100;
-        }
-        
-        return array(
-            'total_minutos' => $total_minutos,
-            'total_minutos_received' => $total_minutos_received,
-            'minutos_monetary_value' => $minutos_monetary_value,
-            'minutos_received_monetary_value' => $minutos_received_monetary_value,
-            'goal_amount' => $campaign->goal_amount,
-            'goal_minutos' => isset($campaign->goal_minutos) ? $campaign->goal_minutos : 0,
-            'minutos_percentage' => min(100, $minutos_percentage),
-        );
-    }
-    /**
      * Format the progress display for a campaign.
      *
      * @since    1.0.0
      * @param    int      $campaign_id    The campaign ID.
-     * @param    string   $type           The type of progress to display ('hours', 'money', or 'minutos').
+     * @param    string   $type           The type of progress to display ('votes').
      * @return   string                   The formatted progress display.
      */
-    public function format_progress_display($campaign_id, $type = 'hours') {
-        if ($type === 'hours') {
-            $stats = $this->get_donation_stats($campaign_id);
-            return sprintf(
-                '%d von %d Stunden',
-                $stats['total_hours'],
-                $stats['goal_hours']
-            );
-        } elseif ($type === 'minutos') {
-            $stats = $this->get_minutos_stats($campaign_id);
-            if ($stats['goal_minutos'] > 0) {
-                return sprintf(
-                    '%d Minutos von %d',
-                    $stats['total_minutos'],
-                    $stats['goal_minutos']
-                );
-            } else {
-                return sprintf(
-                    '%d Minutos (%.2f,- €) von %.2f,- €',
-                    $stats['total_minutos'],
-                    $stats['minutos_monetary_value'],
-                    $stats['goal_amount']
-                );
-            }
-        } else {
-            $stats = $this->get_donation_stats($campaign_id);
-            return sprintf(
-                '%.2f,- € von %.2f,- €',
-                $stats['total_amount'],
-                $stats['goal_amount']
-            );
-        }
+    public function format_progress_display($campaign_id, $type = 'votes') {
+        $stats = $this->get_votes_stats($campaign_id);
+        return sprintf(
+            '%d von %d Votes',
+            $stats['total_votes'],
+            $stats['goal_votes']
+        );
     }
 
     /**
@@ -237,111 +157,31 @@ if (!isset($campaign_data['goal_votes'])) {
      *
      * @since    1.0.0
      * @param    int      $campaign_id    The campaign ID.
-     * @param    string   $type           The type of progress to display ('hours', 'money', or 'minutos').
+     * @param    string   $type           The type of progress to display ('votes').
      * @return   string                   The progress bar HTML.
      */
-    public function generate_progress_bar($campaign_id, $type = 'hours') {
-        if ($type === 'hours') {
-            $stats = $this->get_donation_stats($campaign_id);
-            $percentage = $stats['hours_percentage'];
-            $class = 'hours-progress';
-            
-            $html = '<div class="wp-petition-progress-container">';
-            $html .= '<div class="wp-petition-progress-bar ' . esc_attr($class) . '">';
-            $html .= '<div class="wp-petition-progress-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
-            $html .= '</div>';
-            
-            $html .= '<div class="wp-petition-progress-text">';
-            $html .= esc_html(sprintf(
-                '%d von %d Stunden (%.1f%%)',
-                $stats['total_hours'],
-                $stats['goal_hours'],
-                $percentage
-            ));
-            $html .= '</div>';
-            
-            $html .= '</div>';
-            
-            return $html;
-        } elseif ($type === 'minutos') {
-            $stats = $this->get_minutos_stats($campaign_id);
-            $percentage = $stats['minutos_percentage'];
-            $class = 'minutos-progress';
-            
-            $html = '<div class="wp-petition-progress-container">';
-            $html .= '<div class="wp-petition-progress-bar ' . esc_attr($class) . '">';
-            $html .= '<div class="wp-petition-progress-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
-            $html .= '</div>';
-            
-            $html .= '<div class="wp-petition-progress-text">';
-            
-            if ($stats['goal_minutos'] > 0) {
-                $html .= esc_html(sprintf(
-                    '%d Minutos von %d (%.1f%%)',
-                    $stats['total_minutos'],
-                    $stats['goal_minutos'],
-                    $percentage
-                ));
-            } else {
-                $html .= esc_html(sprintf(
-                    '%d Minutos (%.2f,- €) von %.2f,- € (%.1f%%)',
-                    $stats['total_minutos'],
-                    $stats['minutos_monetary_value'],
-                    $stats['goal_amount'],
-                    $percentage
-                ));
-            }
-            
-            $html .= '</div>';
-            
-            $html .= '</div>';
-            
-            return $html;
-        } elseif ($type === 'votes') {
-            $stats = $this->get_votes_stats($campaign_id);
-            $percentage = $stats['votes_percentage'];
-            $class = 'votes-progress';
-            
-            $html = '<div class="wp-petition-progress-container">';
-            $html .= '<div class="wp-petition-progress-bar ' . esc_attr($class) . '">';
-            $html .= '<div class="wp-petition-progress-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
-            $html .= '</div>';
-            
-            $html .= '<div class="wp-petition-progress-text">';
-            $html .= esc_html(sprintf(
-                '%d Votes von %d (%.1f%%)',
-                $stats['total_votes'],
-                $stats['goal_votes'],
-                $percentage
-            ));
-            $html .= '</div>';
-            
-            $html .= '</div>';
-            
-            return $html;
-        } else {
-            $stats = $this->get_donation_stats($campaign_id);
-            $percentage = $stats['amount_percentage'];
-            $class = 'money-progress';
-            
-            $html = '<div class="wp-petition-progress-container">';
-            $html .= '<div class="wp-petition-progress-bar ' . esc_attr($class) . '">';
-            $html .= '<div class="wp-petition-progress-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
-            $html .= '</div>';
-            
-            $html .= '<div class="wp-petition-progress-text">';
-            $html .= esc_html(sprintf(
-                '%.2f,- € von %.2f,- € (%.1f%%)',
-                $stats['total_amount'],
-                $stats['goal_amount'],
-                $percentage
-            ));
-            $html .= '</div>';
-            
-            $html .= '</div>';
-            
-            return $html;
-        }
+    public function generate_progress_bar($campaign_id, $type = 'votes') {
+        $stats = $this->get_votes_stats($campaign_id);
+        $percentage = $stats['votes_percentage'];
+        $class = 'votes-progress';
+        
+        $html = '<div class="wp-petition-progress-container">';
+        $html .= '<div class="wp-petition-progress-bar ' . esc_attr($class) . '">';
+        $html .= '<div class="wp-petition-progress-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
+        $html .= '</div>';
+        
+        $html .= '<div class="wp-petition-progress-text">';
+        $html .= esc_html(sprintf(
+            '%d Votes von %d (%.1f%%)',
+            $stats['total_votes'],
+            $stats['goal_votes'],
+            $percentage
+        ));
+        $html .= '</div>';
+        
+        $html .= '</div>';
+        
+        return $html;
     }
 
     /**

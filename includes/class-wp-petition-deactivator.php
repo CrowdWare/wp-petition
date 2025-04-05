@@ -29,17 +29,5 @@ class WP_Petition_Deactivator {
     public static function deactivate() {
         // We don't want to delete the tables on deactivation
         // This ensures user data is preserved if the plugin is reactivated
-        
-        // If you want to clean up all data on deactivation, uncomment the following code:
-        /*
-        global $wpdb;
-        $campaigns_table = $wpdb->prefix . 'petition_campaigns';
-        $donations_table = $wpdb->prefix . 'petition_donations';
-        
-        $wpdb->query("DROP TABLE IF EXISTS $donations_table");
-        $wpdb->query("DROP TABLE IF EXISTS $campaigns_table");
-        
-        delete_option('wp_petition_db_version');
-        */
     }
 }

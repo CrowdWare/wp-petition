@@ -32,7 +32,6 @@ class WP_Petition_Activator {
 
         // Table names
         $campaigns_table = $wpdb->prefix . 'petition_campaigns';
-        $donations_table = $wpdb->prefix . 'petition_donations';
         $votes_table = $wpdb->prefix . 'petition_votes';
 
         // SQL for creating campaigns table
@@ -53,27 +52,6 @@ class WP_Petition_Activator {
             KEY page_id (page_id)
         ) $charset_collate;";
 
-        // SQL for creating donations table
-        $donations_sql = "CREATE TABLE $donations_table (
-            donation_id bigint(20) NOT NULL AUTO_INCREMENT,
-            campaign_id bigint(20) NOT NULL,
-            name varchar(100) NOT NULL,
-            email varchar(100) NOT NULL,
-            facebook_post tinyint(1) NOT NULL DEFAULT 0,
-            x_post tinyint(1) NOT NULL DEFAULT 0,
-            other_support text,
-            hours int(11) NOT NULL DEFAULT 1,
-            
-            minutos int(11) NOT NULL DEFAULT 0,
-            minutos_received tinyint(1) NOT NULL DEFAULT 0,
-            minutos_received_date datetime DEFAULT NULL,
-            donation_type varchar(20) NOT NULL DEFAULT 'time',
-            
-            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (donation_id),
-            KEY campaign_id (campaign_id)
-        ) $charset_collate;";
-        
         $votes_sql = "CREATE TABLE $votes_table (
             votes_id BIGINT(20) NOT NULL AUTO_INCREMENT,
             campaign_id BIGINT(20) NOT NULL,
@@ -92,7 +70,6 @@ class WP_Petition_Activator {
 
         // Create the tables
         dbDelta($campaigns_sql);
-        dbDelta($donations_sql);
         dbDelta($votes_sql);
 
         // Add version to options

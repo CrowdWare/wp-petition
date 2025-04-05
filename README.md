@@ -1,20 +1,20 @@
 # WP Petition
 
-WP Petition is a WordPress plugin for time-based crowdfunding campaigns where users can donate their time instead of money. Users can promote campaigns or products through social media posts.
+WP Petition is a WordPress plugin for petition campaigns where users can sign and support your cause. Users can express interest in campaigns or products and provide feedback.
 
 ## Description
 
-WP Petition allows you to create crowdfunding campaigns where supporters can donate their time rather than money. This is perfect for community projects, non-profits, or any initiative that values time contributions.
+WP Petition allows you to create petition campaigns where supporters can sign and express their interest. This is perfect for community projects, non-profits, or any initiative that needs to gauge public interest and support.
 
 ### Key Features
 
-- **Time-based Donations**: Collect time commitments from supporters
-- **Social Media Integration**: Supporters can pledge to promote on Facebook and X (Twitter)
+- **Petition Signatures**: Collect signatures and support from users
+- **Interest Tracking**: Users can indicate if they would use your product/service
 - **Campaign Management**: Create and manage multiple campaigns
-- **Progress Tracking**: Display progress towards time and monetary goals
-- **Donor Lists**: Show all time donors in a scrollable table
+- **Progress Tracking**: Display progress towards signature goals
+- **Voter Lists**: Show all signatories in a scrollable table
 - **Shortcodes**: Easy integration with any WordPress page or post
-- **Export Functionality**: Export donor data as PDF
+- **Export Functionality**: Export voter data
 - **Responsive Design**: Works on all devices
 
 ## Installation
@@ -22,11 +22,6 @@ WP Petition allows you to create crowdfunding campaigns where supporters can don
 1. Upload the `wp-petition` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Go to 'Petition' in your admin menu to create your first campaign
-4. The addon stripe_payments has to be installed manually.
-5. In order to activate stripe payments we have to enable this option manually because of a bug in our addon.
-'''sql
-INSERT INTO fds9_options (option_name, option_value, autoload) VALUES ('wp_petition_stripe_integration', '1', 'yes') 
-'''
 
 ## Usage
 
@@ -36,8 +31,7 @@ INSERT INTO fds9_options (option_name, option_value, autoload) VALUES ('wp_petit
 2. Fill in the campaign details:
    - Title
    - Description
-   - Hours Goal
-   - Money Goal (optional, for integration with Stripe)
+   - Votes Goal
    - Start/End Dates (optional)
    - Associated Page (optional)
 3. Click "Create Campaign"
@@ -46,83 +40,40 @@ INSERT INTO fds9_options (option_name, option_value, autoload) VALUES ('wp_petit
 
 Use these shortcodes to display campaign elements on your pages:
 
-- `[petition_form id=X]` - Displays the donation form for campaign X
-- `[petition_donors id=X]` - Displays the donors list for campaign X
-- `[petition_progress id=X type=hours display=bar]` - Displays the hours progress bar
-- `[petition_progress id=X type=money display=bar]` - Displays the money progress bar
-- `[petition_vote_form id=X]` - Displays the interest collection form for campaign X
-- `[petition_vote_list id=X]` - Displays the list of votes for campaign X
+- `[petition_vote_form id=X lang=en|de|es]` - Displays the petition form for campaign X in the specified language (English, German, or Spanish)
+- `[petition_vote_list id=X]` - Displays the list of signatories for campaign X
+- `[petition_votes_count id=X display=bar]` - Displays the votes progress bar
+- `[petition_votes_count id=X display=text]` - Displays the votes count as text
 
-### Collecting Interest Before Crowdfunding
+### Petition Form
 
-You can now collect user interest before launching a crowdfunding campaign. This helps determine whether a project is needed by users before moving to the crowdfunding phase.
-
-Use the shortcode `[petition_vote_form id=X]` to display the interest collection form, which includes:
+The petition form supports multiple languages (English, German, Spanish) and includes:
+- Name field (required)
 - Email field (required)
-- Checkbox for product interest
-- Dropdown list for contribution role (Developer, Marketing, Tester)
-- Free text field for additional notes
+- Checkbox for "Would you use this in your life or community?"
+- Dropdown list for contribution role (Ideas, Energy, Writing, Tech, Organizing)
+- Text field for "Feature Requests or Thoughts"
+- Submit button
 
 Admins receive an email notification upon submission.
 
-### Donation Form
-
-The donation form includes:
-- Name field (required)
-- Email field (required)
-- Checkboxes for "Facebook Posts" and "X Post"
-- Text field for "Sonstiges" (Other support)
-- Numeric field for "Stunden" (Hours) (minimum 1, required)
-- "Zeit spenden" (Donate time) button
-
-### Managing Donations
+### Managing Petitions
 
 1. Go to Petition > Campaigns in your WordPress admin
-2. View campaign statistics and donor information
-3. Export donor lists as PDF
+2. View campaign statistics and voter information
+3. Export voter lists
 
 ## Customization
 
 You can customize the plugin's appearance by overriding the CSS styles in your theme.
-
-## Integration with Minutos
-
-WP Petition supports [Minutos](https://minuto.org/de) as a complementary currency. Minutos are time-based vouchers that can be donated to campaigns.
-
-### Using Minutos
-
-1. Use the shortcode `[petition_form id=X type=minutos]` to display a Minutos donation form
-2. Donors can pledge Minutos through the form and then send the physical Minutos by mail
-3. Campaign administrators can mark Minutos as received in the admin area
-4. The plugin automatically converts Minutos to monetary value (2 Minutos = 1 Euro)
-
-### Displaying Minutos Donations
-
-Use these shortcodes to display Minutos donations:
-
-- `[petition_donors id=X type=minutos]` - Displays only Minutos donors
-- `[petition_progress id=X type=minutos display=bar]` - Displays the Minutos progress bar
-
-
-### Displaying Money Donations
-
-Use these enhanced shortcodes to display monetary donations:
-
-- `[petition_donors id=X type=hours]` - Displays only hours donors
-- `[petition_donors id=X type=money]` - Displays only money donors
-- `[petition_donors id=X type=minutos]` - Displays only Minutos donors
-- `[petition_donors id=X type=both]` - Displays all types of donors
-- `[petition_progress id=X type=money display=bar]` - Displays the money progress bar
-
-The plugin will automatically calculate the total amount donated through the associated Stripe products and display it in the progress bar and statistics.
 
 ## Creating a ZIP File
 
 To create a distributable ZIP file of the plugin:
 
 1. Navigate to the plugin directory
-2. Run the included script: `./create-zip.sh`
-3. The script will create a ZIP file named `wp-petition-1.0.0.zip` (or with your current version number)
+2. Run the included script: `./build.sh`
+3. The script will create a ZIP file named `wp-petition-1.0.8.zip` (or with your current version number)
 
 ## Requirements
 

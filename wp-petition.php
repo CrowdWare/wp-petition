@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Petition
  * Plugin URI: https://example.com/wp-petition
- * Description: A WordPress plugin for time-based petition campaigns where users can donate their time instead of money.
- * Version: 1.0.7
+ * Description: A WordPress plugin for petition campaigns where users can sign and support your cause.
+ * Version: 1.0.9
  * Author: CrowdWare
  * Author URI: https://example.com
  * Text Domain: wp-petition
@@ -18,7 +18,7 @@ if (!defined('WPINC')) {
 }
 
 // Define plugin constants
-define('WP_PETITION_VERSION', '1.0.7');
+define('WP_PETITION_VERSION', '1.0.9');
 define('WP_PETITION_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WP_PETITION_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WP_PETITION_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -64,41 +64,6 @@ add_shortcode('petition_votes_count', 'petition_votes_count');
 add_action('init', 'handle_petition_vote_submission');
 run_wp_petition();
 
-/**
- * Creates a WooCommerce product for a campaign.
- *
- * @param int $campaign_id The ID of the campaign.
- * @param string $title The title of the campaign.
- * @param string $description The description of the campaign.
- */
-function create_woocommerce_product($campaign_id, $title, $description) {
-    // Check if WooCommerce is active
-    if (!class_exists('WooCommerce')) {
-        return;
-    }
-
-    // Check if the product already exists
-    $product_id = get_post_meta($campaign_id, '_woocommerce_product_id', true);
-    if ($product_id) {
-        return;
-    }
-
-    // Create the product
-    $product = new WC_Product_Simple();
-    $product->set_name($title);
-    $product->set_description($description);
-    $product->set_status('publish');
-    $product->set_catalog_visibility('hidden');
-    $product->set_price(1); // Set a default price of 1
-    $product->set_regular_price(1);
-    $product->set_sold_individually('yes');
-
-    // Save the product
-    $product_id = $product->save();
-
-    // Update the campaign meta with the product ID
-    update_post_meta($campaign_id, '_woocommerce_product_id', $product_id);
-}
 
 
 /**
@@ -372,7 +337,6 @@ function petition_vote_form($atts) {
     <form class="wp-petition-form" method="post" action="">
     <?php wp_nonce_field('wp_petition_vote_form', 'wp_petition_vote_nonce'); ?>
     <input type="hidden" name="campaign_id" value="<?php echo esc_attr($campaign_id); ?>">
-    <input type="hidden" name="donation_type" value="vote">
     <?php // Add hidden field for the current URL ?>
     <input type="hidden" name="_wp_http_referer" value="<?php echo esc_url(wp_unslash($_SERVER['REQUEST_URI'])); ?>">
     <div class="form-field">

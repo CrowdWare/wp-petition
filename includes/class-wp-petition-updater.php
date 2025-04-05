@@ -28,7 +28,7 @@ class WP_Petition_Updater {
      * @access   private
      * @var      string    $db_version    The current database version.
      */
-    private $db_version = '1.0.1';
+    private $db_version = '1.0.2';
 
     /**
      * Initialize the class and set its properties.
